@@ -36,8 +36,8 @@ function New-Pipe{
         $opt =  $host.UI.PromptForChoice($Title,$Info,$Options,$DefaultChoice)
         switch($opt){
             0 {
-                New-Item -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.csv") -Force
-                 $PipeBlock | Set-Content -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.csv") -Force
+                New-Item -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml") -Force
+                $PipeBlock |  Export-Clixml -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml") -Force
             }
             1 {
                 Write-Host 'Please provide a new name:'
@@ -50,8 +50,8 @@ function New-Pipe{
         }
      }
      else{
-        New-Item -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.csv")
-        $PipeBlock |  Export-Csv -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.csv") -Force
+        New-Item -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml")
+        $PipeBlock |  Export-Clixml -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml") -Force
      }
 }
 function Get-Pipe{
