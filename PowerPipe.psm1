@@ -1,4 +1,5 @@
-﻿function New-Pipe{
+﻿$ModuleHome = Join-Path -Path ($Env:PSModulePath.split(";")[1]) -ChildPath "\PowerPipe\"
+function New-Pipe{
      <#
       .Synopsis
         Allows you to create a named PipeBlock. 
@@ -26,6 +27,8 @@
      [parameter(Mandatory=$true)]
         [ScriptBlock]$PipeBlock
      )
+     $pipetemp = {$Name,$PipeBlock}
+     $pipetemp | ConvertTo-Xml | 
 }
 function Get-Pipe{
      <#
@@ -134,6 +137,12 @@ function List-Pipes{
         Http://www.github.com/LogoiLab/PowerSplitter
      #Requires -Version 2.0
      #>
+     Params(
+     [parameter(Mandatory=$true)]
+        [String]$Old,
+    [parameter(Mandatory=$true)]
+        [String]$New
+     )
  }
 function Split-Pipe{
     <#
@@ -188,7 +197,7 @@ function Split-Pipe{
      Params(
      [parameter(Mandatory=$true)]
         [ScriptBlock]$Main,
-    [parameter(Mandatory=$true)]
+     [parameter(Mandatory=$true)]
         [Array]$Threads
      )
 }
@@ -199,9 +208,9 @@ function Merge-Pipe{
        .Description
         The Merge-Pipe CMDlet allows you to converge all pipes of your choice into a single pipe.
        .Example
-        Merge-Pipe -Name "PipeBlock1","PipeBlock2","PipeBlock3"
+        Merge-Pipe -Pipes "PipeBlock1","PipeBlock2","PipeBlock3"
         Merges the three pipes.
-       .Parameter -Name
+       .Parameter -Pipes
         A comma separated list of PipeBlocks to merge.
        .Outputs
         A pipeline variable "$_" with dot sourceable tables for each merged PipeBlock(ex. "$_.PipeBlock1").
@@ -214,4 +223,8 @@ function Merge-Pipe{
         Http://www.github.com/LogoiLab/PowerSplitter
      #Requires -Version 2.0
      #>
+     Params(
+     [parameter(Mandatory=$true)]
+        [Array]$Pipes
+     )
 }
