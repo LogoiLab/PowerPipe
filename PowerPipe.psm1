@@ -1,4 +1,4 @@
-﻿$ModuleHome = Join-Path -Path ($Env:PSModulePath.split(';')[1]) -ChildPath '\PowerPipe\'
+﻿$ModuleHome = Join-Path -Path ($Env:PSModulePath.split(';')[0]) -ChildPath '\PowerPipe\'
 function New-Pipe{
      <#
       .Synopsis
@@ -13,21 +13,46 @@ function New-Pipe{
         .Parameter -PipeBlock
         The scriptblock that will become the PipeBlock.
        .Notes
-        NAME:  PowerSplitter
+        NAME: PowerPipe
         AUTHOR: Chad Baxter
-        LASTEDIT: 10/5/2015
+        LASTEDIT: 10/6/2015
         KEYWORDS:
        .Link
-        Http://www.github.com/LogoiLab/PowerSplitter
+        Http://www.github.com/LogoiLab/PowerPipe
      #Requires -Version 2.0
      #>
-     Params(
+     [CmdletBinding()]
+     Param(
      [parameter(Mandatory=$true)]
         [String]$Name,
      [parameter(Mandatory=$true)]
         [ScriptBlock]$PipeBlock
      )
-     $PipeBlock | ConvertTo-Xml | Add-Content -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml") -Force
+     if(Test-Path -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.Csv")){
+        $Title = "Overwrite `"$Name`"?"
+        $Info = "The PipeBlock `"$Name`" already exists! Overwrite?"
+        $Options = [System.Management.Automation.Host.ChoiceDescription[]] @('&Yes', '&Choose a different name', '&Cancel')
+        [int]$DefaultChoice = 2
+        $opt =  $host.UI.PromptForChoice($Title,$Info,$Options,$DefaultChoice)
+        switch($opt){
+            0 {
+                New-Item -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.csv") -Force
+                 $PipeBlock | Set-Content -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.csv") -Force
+            }
+            1 {
+                Write-Host 'Please provide a new name:'
+                $NewName = Read-Host '>:'
+                New-Pipe -Name $NewName -PipeBlock $PipeBlock
+            }
+            2 {
+                Break
+            }
+        }
+     }
+     else{
+        New-Item -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.csv")
+        $PipeBlock |  Export-Csv -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.csv") -Force
+     }
 }
 function Get-Pipe{
      <#
@@ -43,15 +68,16 @@ function Get-Pipe{
        .Outputs
         Pipeline variable("$_")
        .Notes
-        NAME:  PowerSplitter
+        NAME: PowerPipe
         AUTHOR: Chad Baxter
-        LASTEDIT: 10/5/2015
+        LASTEDIT: 10/6/2015
         KEYWORDS:
        .Link
-        Http://www.github.com/LogoiLab/PowerSplitter
+        Http://www.github.com/LogoiLab/PowerPipe
      #Requires -Version 2.0
      #>
-     Params(
+     [CmdletBinding()]
+     Param(
      [parameter(Mandatory=$true)]
         [String]$Name
      )
@@ -70,22 +96,23 @@ function Set-Pipe{
        .Parameter -Value
         The new scriptblock that will replace the pre-existing one in the PipeBlock.
        .Notes
-        NAME:  PowerSplitter
+        NAME: PowerPipe
         AUTHOR: Chad Baxter
-        LASTEDIT: 10/5/2015
+        LASTEDIT: 10/6/2015
         KEYWORDS:
        .Link
-        Http://www.github.com/LogoiLab/PowerSplitter
+        Http://www.github.com/LogoiLab/PowerPipe
      #Requires -Version 2.0
      #>
-     Params(
+     [CmdletBinding()]
+     Param(
      [parameter(Mandatory=$true)]
         [String]$Name,
      [parameter(Mandatory=$true)]
         [ScriptBlock]$Value
      )
 }
-function List-Pipes{
+function Show-Pipes{
     <#
       .Synopsis
         Allows you to list current pipes or PipeBlocks. 
@@ -97,15 +124,16 @@ function List-Pipes{
        .Parameter -Add
         The ScriptBlocks or PipeBlocks to diverge to.
        .Notes
-        NAME:  PowerSplitter
+        NAME: PowerPipe
         AUTHOR: Chad Baxter
-        LASTEDIT: 10/5/2015
+        LASTEDIT: 10/6/2015
         KEYWORDS:
        .Link
-        Http://www.github.com/LogoiLab/PowerSplitter
+        Http://www.github.com/LogoiLab/PowerPipe
      #Requires -Version 2.0
      #>
-     Params(
+     [CmdletBinding()]
+     Param(
      [parameter(Mandatory=$false)]
         [String]$Filter,
      [parameter(Mandatory=$false)]
@@ -114,7 +142,7 @@ function List-Pipes{
         [String]$Exclude
      )
  }
- function Name-Pipe{
+ function Rename-Pipe{
     <#
       .Synopsis
         Allows you to rename a PipeBlock.
@@ -128,15 +156,16 @@ function List-Pipes{
        .Parameter -New
         The new PipeBlock name.
        .Notes
-        NAME:  PowerSplitter
+        NAME: PowerPipe
         AUTHOR: Chad Baxter
-        LASTEDIT: 10/5/2015
+        LASTEDIT: 10/6/2015
         KEYWORDS:
        .Link
-        Http://www.github.com/LogoiLab/PowerSplitter
+        Http://www.github.com/LogoiLab/PowerPipe
      #Requires -Version 2.0
      #>
-     Params(
+     [CmdletBinding()]
+     Param(
      [parameter(Mandatory=$true)]
         [String]$Old,
     [parameter(Mandatory=$true)]
@@ -155,15 +184,16 @@ function Split-Pipe{
        .Parameter -Add
         The ScriptBlocks or PipeBlocks to diverge to.
        .Notes
-        NAME:  PowerSplitter
+        NAME: PowerPipe
         AUTHOR: Chad Baxter
-        LASTEDIT: 10/5/2015
+        LASTEDIT: 10/6/2015
         KEYWORDS:
        .Link
-        Http://www.github.com/LogoiLab/PowerSplitter
+        Http://www.github.com/LogoiLab/PowerPipe
      #Requires -Version 2.0
      #>
-     Params(
+     [CmdletBinding()]
+     Param(
      [parameter(Mandatory=$true)]
         [Array]$Add
      )
@@ -185,15 +215,16 @@ function Split-Pipe{
         .Parameter -Threads
         The comma separated alterate pipeline ScriptBlocks or PipeBlocks.
        .Notes
-        NAME:  PowerSplitter
+        NAME: PowerPipe
         AUTHOR: Chad Baxter
-        LASTEDIT: 10/5/2015
+        LASTEDIT: 10/6/2015
         KEYWORDS:
        .Link
-        Http://www.github.com/LogoiLab/PowerSplitter
+        Http://www.github.com/LogoiLab/PowerPipe
      #Requires -Version 2.0
      #>
-     Params(
+     [CmdletBinding()]
+     Param(
      [parameter(Mandatory=$true)]
         [ScriptBlock]$Main,
      [parameter(Mandatory=$true)]
@@ -214,15 +245,16 @@ function Merge-Pipe{
        .Outputs
         A pipeline variable "$_" with dot sourceable tables for each merged PipeBlock(ex. "$_.PipeBlock1").
        .Notes
-        NAME:  PowerSplitter
+        NAME: PowerPipe
         AUTHOR: Chad Baxter
-        LASTEDIT: 10/5/2015
+        LASTEDIT: 10/6/2015
         KEYWORDS:
        .Link
-        Http://www.github.com/LogoiLab/PowerSplitter
+        Http://www.github.com/LogoiLab/PowerPipe
      #Requires -Version 2.0
      #>
-     Params(
+     [CmdletBinding()]
+     Param(
      [parameter(Mandatory=$true)]
         [Array]$Pipes
      )
