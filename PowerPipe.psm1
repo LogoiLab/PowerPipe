@@ -1,4 +1,4 @@
-﻿$ModuleHome = Join-Path -Path ($Env:PSModulePath.split(";")[1]) -ChildPath "\PowerPipe\"
+﻿$ModuleHome = Join-Path -Path ($Env:PSModulePath.split(';')[1]) -ChildPath '\PowerPipe\'
 function New-Pipe{
      <#
       .Synopsis
@@ -27,8 +27,7 @@ function New-Pipe{
      [parameter(Mandatory=$true)]
         [ScriptBlock]$PipeBlock
      )
-     $pipetemp = {$Name,$PipeBlock}
-     $pipetemp | ConvertTo-Xml | 
+     $PipeBlock | ConvertTo-Xml | Add-Content -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml") -Force
 }
 function Get-Pipe{
      <#
