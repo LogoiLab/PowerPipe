@@ -61,8 +61,8 @@ function Get-Pipe{
        .Description
         The Get-Pipe CMDlet allows you to view the end result of an executed pipe.
        .Example
-        Set-Pipe -Name "PipeName"
-        Changes the value of the PipeBlock "PipeName".
+        Get-Pipe -Name "PipeName"
+        Gets the end result of the PipeBlock "PipeName"
        .Parameter -Name
         The name for the PipeBlock you wish to modify.
        .Outputs
@@ -81,6 +81,37 @@ function Get-Pipe{
      [parameter(Mandatory=$true)]
         [String]$Name
      )
+}
+function Read-Pipe{
+     <#
+      .Synopsis
+        Allows you view the current underlying code of a PipeBlock. 
+       .Description
+        The Read-Pipe CMDlet allows you to view the current value of the ScriptBlock contained within the PipeBlock.
+       .Example
+        Read-Pipe -Name "PipeName"
+        Gets the current PipeBlock value of "PipeName"
+       .Notes
+        NAME: PowerPipe
+        AUTHOR: Chad Baxter
+        LASTEDIT: 10/6/2015
+        KEYWORDS:
+       .Link
+        Http://www.github.com/LogoiLab/PowerPipe
+     #Requires -Version 2.0
+     #>
+     [CmdletBinding()]
+     Param(
+     [parameter(Mandatory=$true)]
+        [String]$Name
+     )
+     if(Test-Path -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml")){
+        $PipeBlock = Import-Clixml -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml")
+        Return $PipeBlock
+     }
+     else{
+        Write-Error "The PipeBlock `"$Name`" cannot be found."
+     }
 }
 function Set-Pipe{
      <#
@@ -111,6 +142,12 @@ function Set-Pipe{
      [parameter(Mandatory=$true)]
         [ScriptBlock]$Value
      )
+     if(Test-Path -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml")){
+        $Value | Export-Clixml -Path (Join-Path -Path $ModuleHome -ChildPath "\PipeStorage\$Name.xml") -Force
+     }
+     else{
+        Write-Error "The PipeBlock `"$Name`" cannot be found."
+     }
 }
 function Show-Pipes{
     <#
@@ -150,7 +187,7 @@ function Show-Pipes{
         The Name-Pipe CMDlet is used to set a custom name for a PipeBlock.
        .Example
         Name-Pipe -Old "PipeBlockOld" -New "PipeBlockNew"
-        Renames PopeBlockOld to PipeBlockNew.
+        Renames PipeBlockOld to PipeBlockNew.
        .Parameter -Old
         The old PipeBlock name.
        .Parameter -New
