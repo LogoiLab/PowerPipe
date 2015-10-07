@@ -15,7 +15,7 @@ function New-Pipe
             .Parameter -PipeBlock
             The scriptblock that will become the PipeBlock.
             .Notes
-            NAME: PowerPipe
+            MODULE: PowerPipe
             AUTHOR: Chad Baxter
             LASTEDIT: 10/6/2015
             KEYWORDS:
@@ -76,7 +76,7 @@ function Get-Pipe
             .Outputs
             Pipeline variable("$_")
             .Notes
-            NAME: PowerPipe
+            MODULE: PowerPipe
             AUTHOR: Chad Baxter
             LASTEDIT: 10/6/2015
             KEYWORDS:
@@ -101,7 +101,7 @@ function Read-Pipe
             Read-Pipe -Name "PipeName"
             Gets the current PipeBlock value of "PipeName"
             .Notes
-            NAME: PowerPipe
+            MODULE: PowerPipe
             AUTHOR: Chad Baxter
             LASTEDIT: 10/6/2015
             KEYWORDS:
@@ -139,7 +139,7 @@ function Set-Pipe
             .Parameter -Value
             The new scriptblock that will replace the pre-existing one in the PipeBlock.
             .Notes
-            NAME: PowerPipe
+            MODULE: PowerPipe
             AUTHOR: Chad Baxter
             LASTEDIT: 10/6/2015
             KEYWORDS:
@@ -169,14 +169,16 @@ function Show-Pipes
             .Synopsis
             Allows you to list current pipes or PipeBlocks. 
             .Description
-            The List-Pipes CMDlet is used to view currently executing or finished pipes.
+            The Show-Pipes CMDlet is used to view currently executing or finished pipes.
             .Example
-            Split-Pipe -Add {ScriptBlock},"PipeBlock1"
-            Splits the current pipe to continue down the pipeline and diverge to the provided ScriptBlocks or PipeBlocks.
-            .Parameter -Add
-            The ScriptBlocks or PipeBlocks to diverge to.
+            Split-Pipe -Filter a*
+            Lists all pipes that start with "a".
+            .Parameter -Filter
+            Filters the PipeBlock list to a specified regex
+            .Parameter -Exclude
+            A comma separated list of PipeBlocks to exclude.
             .Notes
-            NAME: PowerPipe
+            MODULE: PowerPipe
             AUTHOR: Chad Baxter
             LASTEDIT: 10/6/2015
             KEYWORDS:
@@ -188,8 +190,6 @@ function Show-Pipes
     Param(
         [parameter(Mandatory = $false)]
         [String]$Filter,
-        [parameter(Mandatory = $false)]
-        [String]$Include,
         [parameter(Mandatory = $false)]
         [String]$Exclude
     )
@@ -209,7 +209,7 @@ function Rename-Pipe
             .Parameter -New
             The new PipeBlock name.
             .Notes
-            NAME: PowerPipe
+            MODULE: PowerPipe
             AUTHOR: Chad Baxter
             LASTEDIT: 10/6/2015
             KEYWORDS:
@@ -238,7 +238,7 @@ function Split-Pipe
             .Parameter -Add
             The ScriptBlocks or PipeBlocks to diverge to.
             .Notes
-            NAME: PowerPipe
+            MODULE: PowerPipe
             AUTHOR: Chad Baxter
             LASTEDIT: 10/6/2015
             KEYWORDS:
@@ -251,6 +251,64 @@ function Split-Pipe
         [parameter(Mandatory = $true)]
         [Array]$Add
     )
+    $Input = $_
+    foreach($Pipe in $Add)
+    {
+        If($Pipe -is [string])
+        {
+            Invoke-Pipe -Input $Input -Pipe $Pipe
+        }
+        else
+        {
+            Invoke-Pipe -Input $Input -ScriptBlock $Pipe
+        }
+    }
+}
+function Invoke-Pipe
+{
+    <#
+            .Synopsis
+            Like a well in plumbing. Allows you to start a multithreaded pipeline. 
+            .Description
+            The Start-Pipe CMDlet allows you to start with a split pipe.
+            .Example
+            Start-Pipe -Main {ScriptBlock} -Threads {ScriptBlock},"PipeBlock1"
+            Creates a new multithreaded pipeline, the main line to return to(in this case a ScriptBlock) and two threads(one a ScriptBlock, the other a named PipeBlock).
+            .Example
+            Start-Pipe -Main "PipeBlock1" -Threads {ScriptBlock},"PipeBlock2"
+            Creates a new multithreaded pipeline, the main line to return to(in this case a named PipeBlock1) and two threads(one a ScriptBlock, the other a named PipeBlock).
+            .Parameter -Main
+            The main operating ScriptBlock or PipeBlock.
+            .Parameter -Threads
+            The comma separated alterate pipeline ScriptBlocks or PipeBlocks.
+            .Notes
+            MODULE: PowerPipe
+            AUTHOR: Chad Baxter
+            LASTEDIT: 10/6/2015
+            KEYWORDS:
+            .Link
+            Http://www.github.com/LogoiLab/PowerPipe
+            #Requires -Version 2.0
+    #>
+    [CmdletBinding()]
+    Param(
+        [parameter(Mandatory = $true)]
+        [ScriptBlock]$Input,
+        [parameter(Mandatory = $false)]
+        [String]$Pipe,
+        [parameter(Mandatory = $false)]
+        [ScriptBlock]$ScriptBlock
+    )
+    if($ScriptBlock -ne $null)
+    {
+        $Command = "$Input | $ScriptBlock"
+        Invoke-Expression -Command $Command
+    }
+    else
+    {
+        $Command = "$Input | " + (Read-Pipe -Name $Pipe)
+        Invoke-Expression -Command $Command
+    }
 }
 function Start-Pipe
 {
@@ -270,7 +328,7 @@ function Start-Pipe
             .Parameter -Threads
             The comma separated alterate pipeline ScriptBlocks or PipeBlocks.
             .Notes
-            NAME: PowerPipe
+            MODULE: PowerPipe
             AUTHOR: Chad Baxter
             LASTEDIT: 10/6/2015
             KEYWORDS:
@@ -301,7 +359,7 @@ function Merge-Pipe
             .Outputs
             A pipeline variable "$_" with dot sourceable tables for each merged PipeBlock(ex. "$_.PipeBlock1").
             .Notes
-            NAME: PowerPipe
+            MODULE: PowerPipe
             AUTHOR: Chad Baxter
             LASTEDIT: 10/6/2015
             KEYWORDS:
