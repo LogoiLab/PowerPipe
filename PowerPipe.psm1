@@ -264,7 +264,7 @@ function Start-Pipe
             Creates a new multithreaded pipeline, the main line to return to(in this case a ScriptBlock) and two threads(one a ScriptBlock, the other a named PipeBlock).
             .Example
             Start-Pipe -Main "PipeBlock1" -Threads {ScriptBlock},"PipeBlock2"
-            Creates a new multithreaded pipeline, the main line to return to(in this case a named PipeBlock) and two threads(one a ScriptBlock, the other a named PipeBlock).
+            Creates a new multithreaded pipeline, the main line to return to(in this case a named PipeBlock1) and two threads(one a ScriptBlock, the other a named PipeBlock).
             .Parameter -Main
             The main operating ScriptBlock or PipeBlock.
             .Parameter -Threads
