@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+<!-- Read this before publishing packages to chocolatey.org: https://github.com/chocolatey/chocolatey/wiki/CreatePackages -->
+    <id>powerpipe</id>
+    <title>PowerPipe</title>
+    <version>0.0.5</version>
+    <authors>LogoiLab,MisterCBax,PentestingForever,Chad Baxter</authors>
+    <owners>MisterCBax</owners>
+    <summary>PowerPipe is a revolutionary new module for PowerShell. PowerPipe allows you to harness the true power of the one-liner by making the pipeline threadable.</summary>
+    <description>Warning! This package is in EXTREME ALPHA!(Pretty much just a concept at the moment.) PowerPipe allows you to split and merge multiple pipelines, creating a more extensible piping system.</description>
+    <projectUrl>http://logoilab.github.io/PowerPipe/</projectUrl>
+    <tags>PowerPipe PowerShell Pipeline Automation</tags>
+    <copyright>2015 Chad Baxter</copyright>
+    <licenseUrl>https://raw.githubusercontent.com/LogoiLab/PowerPipe/master/License.lic</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+<!-- Important note about https://cdn.rawgit.com: Files are cached permanently after the first request. Use commit URLs when updating the icon. -->
+<!--<iconUrl>https://raw.githubusercontent.com/LogoiLab/PowerPipe/master/Icons/PowerPipe.ico</iconUrl>-->
+    <releaseNotes>Warning! This package is in EXTREME ALPHA!(Pretty much just a concept at the moment.)</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

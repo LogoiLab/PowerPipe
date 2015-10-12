@@ -1,0 +1,1 @@
+Remove-Item -Path (Join-Path -Path ($Env:PSModulePath.split(';')[0]) -ChildPath '\PowerPipe') -Recurse -Force

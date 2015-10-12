@@ -1,0 +1,1 @@
+iex ((new-object net.webclient).DownloadString('http://raw.githubusercontent.com/LogoiLab/PowerPipe/master/Installer/install.ps1'))
